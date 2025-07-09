@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export default function Notifications() {
   const { toast } = useToast();
@@ -23,6 +24,29 @@ export default function Notifications() {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
   });
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("semua");
+  const [sortOrder, setSortOrder] = useState<"terbaru" | "terlama">("terbaru");
+
+  // Map button to notification type
+  const categoryMap: Record<string, string | null> = {
+    semua: null,
+    absensi: "attendance",
+    cuti: "leave",
+    pengumuman: "announcement",
+  };
+
+  // Filter and sort notifications
+  const filteredNotifications = (notifications || [])
+    .filter((notif) => {
+      if (!categoryMap[selectedCategory]) return true;
+      return notif.type === categoryMap[selectedCategory];
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === "terbaru" ? dateB - dateA : dateA - dateB;
+    });
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -78,24 +102,62 @@ export default function Notifications() {
       </div>
 
       {/* Notification Categories */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <Button className="bg-primary-red hover:bg-red-700" size="sm">
+      <div className="flex flex-wrap gap-2 mb-6 items-center">
+        <Button
+          className={selectedCategory === "semua" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+          variant={selectedCategory === "semua" ? undefined : "outline"}
+          size="sm"
+          onClick={() => setSelectedCategory("semua")}
+        >
           Semua
         </Button>
-        <Button variant="outline" size="sm">
+        <Button
+          className={selectedCategory === "absensi" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+          variant={selectedCategory === "absensi" ? undefined : "outline"}
+          size="sm"
+          onClick={() => setSelectedCategory("absensi")}
+        >
           Absensi
         </Button>
-        <Button variant="outline" size="sm">
+        <Button
+          className={selectedCategory === "cuti" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+          variant={selectedCategory === "cuti" ? undefined : "outline"}
+          size="sm"
+          onClick={() => setSelectedCategory("cuti")}
+        >
           Cuti
         </Button>
-        <Button variant="outline" size="sm">
+        <Button
+          className={selectedCategory === "pengumuman" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+          variant={selectedCategory === "pengumuman" ? undefined : "outline"}
+          size="sm"
+          onClick={() => setSelectedCategory("pengumuman")}
+        >
           Pengumuman
         </Button>
+        <div className="ml-auto flex gap-2">
+          <Button
+            variant={sortOrder === "terbaru" ? undefined : "outline"}
+            size="sm"
+            className={sortOrder === "terbaru" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+            onClick={() => setSortOrder("terbaru")}
+          >
+            Terbaru
+          </Button>
+          <Button
+            variant={sortOrder === "terlama" ? undefined : "outline"}
+            size="sm"
+            className={sortOrder === "terlama" ? "bg-primary-red hover:bg-red-700 text-white" : ""}
+            onClick={() => setSortOrder("terlama")}
+          >
+            Terlama
+          </Button>
+        </div>
       </div>
 
       {/* Notifications List */}
       <div className="space-y-4">
-        {notifications?.map((notification) => (
+        {filteredNotifications.map((notification) => (
           <Card 
             key={notification.id} 
             className={cn(
@@ -149,7 +211,7 @@ export default function Notifications() {
           </Card>
         ))}
 
-        {(!notifications || notifications.length === 0) && (
+        {(filteredNotifications.length === 0) && (
           <Card>
             <CardContent className="p-12 text-center">
               <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
