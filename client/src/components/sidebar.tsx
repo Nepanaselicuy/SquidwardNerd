@@ -2,15 +2,16 @@ import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Home, Clock, Calendar, Bell, CalendarDays, User, LogOut } from "lucide-react";
+import { Home, Clock, Calendar, Bell, CalendarDays, User, LogOut, Building2 } from "lucide-react";
 
 const menuItems = [
   { path: "/", label: "Dashboard", icon: Home },
   { path: "/attendance", label: "Absensi", icon: Clock },
   { path: "/leave", label: "Izin/Cuti", icon: Calendar },
-  { path: "/notifications", label: "Notifikasi", icon: Bell },
   { path: "/calendar", label: "Kalender", icon: CalendarDays },
+  { path: "/notifications", label: "Notifikasi", icon: Bell },
   { path: "/profile", label: "Profile", icon: User },
+  { path: "/about", label: "Tentang", icon: Building2 },
 ];
 
 interface SidebarProps {

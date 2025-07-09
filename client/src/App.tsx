@@ -14,6 +14,7 @@ import Leave from "@/pages/leave";
 import Notifications from "@/pages/notifications";
 import Calendar from "@/pages/calendar";
 import Profile from "@/pages/profile";
+import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/notifications" component={Notifications} />
       <Route path="/calendar" component={Calendar} />
       <Route path="/profile" component={Profile} />
+      <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>
   );
