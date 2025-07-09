@@ -45,15 +45,15 @@ function App() {
               variant="outline"
               size="sm"
               onClick={() => setSidebarOpen(true)}
-              className="bg-white shadow-lg"
+              className="bg-white/90 backdrop-blur-sm shadow-lg border-gray-200 hover:bg-white hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
               <Menu className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Main Content */}
-          <div className="lg:pl-64">
-            <main className="p-6">
+          <div className="lg:pl-64 transition-all duration-300 ease-in-out">
+            <main className="p-6 animate-fade-in-scale">
               <Router />
             </main>
           </div>
