@@ -60,7 +60,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-gray-50 text-foreground;
+    @apply font-sans antialiased bg-gradient-to-br from-red-50 via-white to-red-50 text-foreground;
   }
 }
 

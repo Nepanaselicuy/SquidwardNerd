@@ -111,21 +111,24 @@ export default function Leave() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Izin & Cuti</h1>
-        <p className="text-gray-600">Kelola pengajuan izin dan cuti Anda</p>
+      <div className="mb-6 bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100">
+        <h1 className="text-2xl font-bold text-red-800 flex items-center">
+          <div className="w-3 h-8 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-4"></div>
+          Izin & Cuti
+        </h1>
+        <p className="text-red-600 ml-7">Kelola pengajuan izin dan cuti Anda</p>
       </div>
 
       {/* Leave Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Calendar className="text-blue-600 w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+                <Calendar className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Cuti Tahunan</h3>
+                <h3 className="text-sm font-medium text-red-600">Cuti Tahunan</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {employee?.annualLeaveBalance || 0}/12
                 </p>
@@ -134,14 +137,14 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-red-100 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
                 <Thermometer className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Cuti Sakit</h3>
+                <h3 className="text-sm font-medium text-red-600">Cuti Sakit</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {employee?.sickLeaveBalance || 0}/12
                 </p>
@@ -150,14 +153,14 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <AlertTriangle className="text-accent-orange w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+                <AlertTriangle className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Izin Mendadak</h3>
+                <h3 className="text-sm font-medium text-red-600">Izin Mendadak</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {employee?.emergencyLeaveBalance || 0}/6
                 </p>
@@ -166,14 +169,14 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Watch className="text-success-green w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+                <Watch className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Izin Pribadi</h3>
+                <h3 className="text-sm font-medium text-red-600">Izin Pribadi</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {employee?.personalLeaveBalance || 0}/12
                 </p>

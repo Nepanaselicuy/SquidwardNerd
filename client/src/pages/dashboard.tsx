@@ -46,14 +46,14 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-lg shadow-md">
                 <Clock className="text-success-green w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Check In</h3>
+                <h3 className="text-sm font-medium text-red-600">Check In</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {todayAttendance?.checkIn 
                     ? formatTimeOnly(new Date(todayAttendance.checkIn))
@@ -65,14 +65,14 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-red-100 rounded-lg">
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
                 <LogOut className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Check Out</h3>
+                <h3 className="text-sm font-medium text-red-600">Check Out</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {todayAttendance?.checkOut 
                     ? formatTimeOnly(new Date(todayAttendance.checkOut))
@@ -84,14 +84,14 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Calendar className="text-blue-600 w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+                <Calendar className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Hadir Bulan Ini</h3>
+                <h3 className="text-sm font-medium text-red-600">Hadir Bulan Ini</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {monthlyStats ? `${monthlyStats.present}/${monthlyStats.total}` : "-"}
                 </p>
@@ -100,14 +100,14 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-lift border-red-100 hover:border-red-200">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <Plane className="text-accent-orange w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+                <Plane className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500">Sisa Cuti</h3>
+                <h3 className="text-sm font-medium text-red-600">Sisa Cuti</h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {employee?.annualLeaveBalance || 0}
                 </p>
@@ -120,9 +120,12 @@ export default function Dashboard() {
       {/* Recent Activity & Upcoming Events */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <Card>
+        <Card className="border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-200">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Aktivitas Terbaru</h3>
+            <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center">
+              <div className="w-2 h-6 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-3"></div>
+              Aktivitas Terbaru
+            </h3>
             <div className="space-y-4">
               {todayAttendance?.checkIn && (
                 <div className="flex items-center">
@@ -159,9 +162,12 @@ export default function Dashboard() {
         </Card>
 
         {/* Upcoming Events */}
-        <Card>
+        <Card className="border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-200">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Mendatang</h3>
+            <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center">
+              <div className="w-2 h-6 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-3"></div>
+              Event Mendatang
+            </h3>
             <div className="space-y-4">
               {upcomingEvents?.map((event) => (
                 <div key={event.id} className="flex items-start">

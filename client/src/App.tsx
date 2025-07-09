@@ -36,7 +36,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
           <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           
           {/* Mobile Menu Button */}

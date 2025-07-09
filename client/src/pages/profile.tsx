@@ -37,9 +37,12 @@ export default function Profile() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-        <p className="text-gray-600">Kelola informasi personal Anda</p>
+      <div className="mb-6 bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100">
+        <h1 className="text-2xl font-bold text-red-800 flex items-center">
+          <div className="w-3 h-8 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-4"></div>
+          Profile
+        </h1>
+        <p className="text-red-600 ml-7">Kelola informasi personal Anda</p>
       </div>
 
       {/* Profile Card */}
