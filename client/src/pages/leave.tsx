@@ -13,6 +13,7 @@ import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import Header from "@/components/header";
 
 const leaveRequestSchema = z.object({
   type: z.string().min(1, "Pilih jenis izin/cuti"),
@@ -111,25 +112,22 @@ export default function Leave() {
 
   return (
     <div>
-      <div className="mb-6 bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100">
-        <h1 className="text-2xl font-bold text-red-800 flex items-center">
-          <div className="w-3 h-8 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-4"></div>
-          Izin & Cuti
-        </h1>
-        <p className="text-red-600 ml-7">Kelola pengajuan izin dan cuti Anda</p>
-      </div>
+      <Header 
+        title="Izin & Cuti" 
+        subtitle="Kelola pengajuan izin dan cuti Anda"
+      />
 
       {/* Leave Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+              <div className="p-3 bg-gradient-to-br from-primary-red/20 to-primary-red/30 rounded-lg shadow-md">
                 <Calendar className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Cuti Tahunan</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Cuti Tahunan</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {employee?.annualLeaveBalance || 0}/12
                 </p>
               </div>
@@ -137,15 +135,15 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <Thermometer className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-accent-orange/20 to-accent-orange/30 rounded-lg shadow-md">
+                <Thermometer className="text-accent-orange w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Cuti Sakit</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Cuti Sakit</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {employee?.sickLeaveBalance || 0}/12
                 </p>
               </div>
@@ -153,15 +151,15 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <AlertTriangle className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-info-blue/20 to-info-blue/30 rounded-lg shadow-md">
+                <AlertTriangle className="text-info-blue w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Izin Mendadak</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Izin Mendadak</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {employee?.emergencyLeaveBalance || 0}/6
                 </p>
               </div>
@@ -169,15 +167,15 @@ export default function Leave() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <Watch className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-success-green/20 to-success-green/30 rounded-lg shadow-md">
+                <Watch className="text-success-green w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Izin Pribadi</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Izin Pribadi</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {employee?.personalLeaveBalance || 0}/12
                 </p>
               </div>

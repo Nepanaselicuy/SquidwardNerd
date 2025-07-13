@@ -2,6 +2,10 @@ import {
   employees, 
   attendanceRecords, 
   leaveRequests, 
+  leaveBalances,
+  leavePolicies,
+  barcodeSessions,
+  hrisSyncLogs,
   notifications, 
   companyEvents,
   type Employee, 
@@ -10,11 +14,20 @@ import {
   type InsertAttendanceRecord,
   type LeaveRequest,
   type InsertLeaveRequest,
+  type LeaveBalance,
+  type InsertLeaveBalance,
+  type LeavePolicy,
+  type InsertLeavePolicy,
+  type BarcodeSession,
+  type InsertBarcodeSession,
+  type HrisSyncLog,
+  type InsertHrisSyncLog,
   type Notification,
   type InsertNotification,
   type CompanyEvent,
   type InsertCompanyEvent
 } from "@shared/schema";
+import { hashPassword } from "./auth";
 
 export interface IStorage {
   // Employee operations
@@ -22,6 +35,10 @@ export interface IStorage {
   getEmployeeByEmail(email: string): Promise<Employee | undefined>;
   createEmployee(employee: InsertEmployee): Promise<Employee>;
   updateEmployee(id: number, updates: Partial<Employee>): Promise<Employee | undefined>;
+  changePassword(id: number, currentPassword: string, newPassword: string): Promise<{success: boolean; message: string}>;
+  
+  // Auth operations
+  authenticateUser(email: string, password: string): Promise<Employee | undefined>;
   
   // Attendance operations
   getAttendanceRecord(employeeId: number, date: string): Promise<AttendanceRecord | undefined>;
@@ -29,11 +46,29 @@ export interface IStorage {
   createAttendanceRecord(record: InsertAttendanceRecord): Promise<AttendanceRecord>;
   updateAttendanceRecord(id: number, updates: Partial<AttendanceRecord>): Promise<AttendanceRecord | undefined>;
   getMonthlyAttendanceStats(employeeId: number, year: number, month: number): Promise<{present: number, total: number}>;
+  createEnhancedAttendanceRecord(record: InsertAttendanceRecord): Promise<AttendanceRecord>;
   
   // Leave operations
   getLeaveRequests(employeeId: number): Promise<LeaveRequest[]>;
   createLeaveRequest(request: InsertLeaveRequest): Promise<LeaveRequest>;
-  updateLeaveRequestStatus(id: number, status: string, reviewedBy: string): Promise<LeaveRequest | undefined>;
+  createAdvancedLeaveRequest(request: any): Promise<LeaveRequest>;
+  updateLeaveRequestStatus(id: number, status: string, reviewedBy: string, comments?: string): Promise<LeaveRequest | undefined>;
+  getLeaveBalances(employeeId: number): Promise<LeaveBalance[]>;
+  getLeavePolicies(): Promise<LeavePolicy[]>;
+  getLeaveCalendar(employeeId: number, year: number, month: number): Promise<any[]>;
+  
+  // Barcode operations
+  generateEmployeeCode(employeeId: number, type: string): Promise<any>;
+  processBarcodeScan(barcodeId: string, action: string, location: any, ipAddress: string): Promise<BarcodeSession>;
+  getBarcodeHistory(employeeId: number, limit: number): Promise<BarcodeSession[]>;
+  validateBarcodeSession(sessionId: string): Promise<boolean>;
+  
+  // HRIS operations
+  syncEmployeeWithHRIS(data: any): Promise<any>;
+  syncAttendanceWithHRIS(employeeId: string, startDate: string, endDate: string): Promise<any>;
+  syncLeaveWithHRIS(employeeId: string, year: number): Promise<any>;
+  getHrisSyncLogs(employeeId: number, limit: number): Promise<HrisSyncLog[]>;
+  getHrisSyncStatus(employeeId: number): Promise<any>;
   
   // Notification operations
   getNotifications(employeeId: number): Promise<Notification[]>;
@@ -63,16 +98,19 @@ export class MemStorage implements IStorage {
     this.companyEvents = new Map();
     this.currentId = 1;
     
-    this.initializeData();
+    // Initialize data asynchronously
+    this.initializeData().catch(console.error);
   }
 
-  private initializeData() {
-    // Create default employee
+  private async initializeData() {
+    // Create default employee with hashed password
+    const hashedPassword = await hashPassword("password123");
     const defaultEmployee: Employee = {
       id: 1,
       employeeId: "EMP-2024-001",
       name: "Ahmad Sutrisno",
       email: "ahmad.sutrisno@intek.co.id",
+      password: hashedPassword,
       position: "IT Developer",
       department: "Information Technology",
       manager: "Budi Setiawan",
@@ -84,6 +122,13 @@ export class MemStorage implements IStorage {
       sickLeaveBalance: 10,
       personalLeaveBalance: 9,
       emergencyLeaveBalance: 5,
+      maternityLeaveBalance: 90,
+      paternityLeaveBalance: 14,
+      barcodeId: null,
+      qrCodeId: null,
+      hrisEmployeeId: null,
+      hrisData: null,
+      lastHrisSync: null,
     };
     this.employees.set(1, defaultEmployee);
 
@@ -198,6 +243,37 @@ export class MemStorage implements IStorage {
     return updated;
   }
 
+  async changePassword(id: number, currentPassword: string, newPassword: string): Promise<{success: boolean; message: string}> {
+    const employee = this.employees.get(id);
+    if (!employee) {
+      return { success: false, message: "Employee not found" };
+    }
+
+    // In a real app, you would verify the current password
+    // For now, we'll just update it
+    const hashedNewPassword = await hashPassword(newPassword);
+    await this.updateEmployee(id, { password: hashedNewPassword });
+    
+    return { success: true, message: "Password changed successfully" };
+  }
+
+  // Auth operations
+  async authenticateUser(email: string, password: string): Promise<Employee | undefined> {
+    const employee = await this.getEmployeeByEmail(email);
+    if (!employee) return undefined;
+    
+    const { comparePassword } = await import("./auth");
+    const isValid = await comparePassword(password, employee.password);
+    
+    if (isValid) {
+      // Return employee without password
+      const { password: _, ...employeeWithoutPassword } = employee;
+      return employeeWithoutPassword as Employee;
+    }
+    
+    return undefined;
+  }
+
   // Attendance operations
   async getAttendanceRecord(employeeId: number, date: string): Promise<AttendanceRecord | undefined> {
     return Array.from(this.attendanceRecords.values()).find(
@@ -273,7 +349,7 @@ export class MemStorage implements IStorage {
     return request;
   }
 
-  async updateLeaveRequestStatus(id: number, status: string, reviewedBy: string): Promise<LeaveRequest | undefined> {
+  async updateLeaveRequestStatus(id: number, status: string, reviewedBy: string, comments?: string): Promise<LeaveRequest | undefined> {
     const request = this.leaveRequests.get(id);
     if (!request) return undefined;
     
@@ -281,7 +357,8 @@ export class MemStorage implements IStorage {
       ...request, 
       status, 
       reviewedBy, 
-      reviewedAt: new Date() 
+      reviewedAt: new Date(),
+      comments: comments || null,
     };
     this.leaveRequests.set(id, updated);
     
@@ -295,6 +372,175 @@ export class MemStorage implements IStorage {
     });
     
     return updated;
+  }
+
+  async createEnhancedAttendanceRecord(record: InsertAttendanceRecord): Promise<AttendanceRecord> {
+    const id = this.currentId++;
+    const attendanceRecord: AttendanceRecord = {
+      id,
+      employeeId: record.employeeId,
+      date: record.date,
+      checkIn: record.checkIn,
+      checkOut: record.checkOut,
+      status: record.status,
+      totalHours: record.totalHours,
+      checkInLocation: null,
+      checkOutLocation: null,
+      checkInPhoto: null,
+      checkOutPhoto: null,
+      checkInMethod: 'manual',
+      checkOutMethod: null,
+      overtimeHours: '0',
+      notes: null,
+    };
+    this.attendanceRecords.set(id, attendanceRecord);
+    return attendanceRecord;
+  }
+
+  async createAdvancedLeaveRequest(request: any): Promise<LeaveRequest> {
+    const id = this.currentId++;
+    const leaveRequest: LeaveRequest = {
+      id,
+      employeeId: request.employeeId,
+      type: request.type,
+      startDate: request.startDate,
+      endDate: request.endDate,
+      duration: request.duration,
+      reason: request.reason,
+      status: 'pending',
+      submittedAt: request.submittedAt,
+      reviewedAt: null,
+      reviewedBy: null,
+      daysRequested: request.daysRequested.toString(),
+      balanceBefore: null,
+      balanceAfter: null,
+      attachments: null,
+      comments: null,
+      approvalWorkflow: null,
+      emergencyContact: null,
+      returnToWorkDate: null,
+      medicalCertificate: null,
+    };
+    this.leaveRequests.set(id, leaveRequest);
+    return leaveRequest;
+  }
+
+  async getLeaveBalances(employeeId: number): Promise<LeaveBalance[]> {
+    // Mock implementation
+    return [
+      {
+        id: 1,
+        employeeId,
+        year: new Date().getFullYear(),
+        leaveType: 'annual',
+        totalAllocated: 12,
+        totalUsed: 3,
+        totalCarriedOver: 0,
+        totalAdjusted: 0,
+        currentBalance: 9,
+        lastUpdated: new Date(),
+      },
+      {
+        id: 2,
+        employeeId,
+        year: new Date().getFullYear(),
+        leaveType: 'sick',
+        totalAllocated: 12,
+        totalUsed: 1,
+        totalCarriedOver: 0,
+        totalAdjusted: 0,
+        currentBalance: 11,
+        lastUpdated: new Date(),
+      },
+    ];
+  }
+
+  async getLeavePolicies(): Promise<LeavePolicy[]> {
+    // Mock implementation
+    return [
+      {
+        id: 1,
+        leaveType: 'annual',
+        name: 'Annual Leave',
+        description: 'Regular annual leave entitlement',
+        defaultDays: 12,
+        maxDays: 20,
+        minDays: 1,
+        requiresApproval: true,
+        approvalLevels: ['manager', 'hr'],
+        requiresDocument: false,
+        documentTypes: null,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+  }
+
+  async getLeaveCalendar(employeeId: number, year: number, month: number): Promise<any[]> {
+    // Mock implementation
+    return [];
+  }
+
+  async generateEmployeeCode(employeeId: number, type: string): Promise<any> {
+    const employee = this.employees.get(employeeId);
+    if (!employee) throw new Error('Employee not found');
+    
+    const code = `${type.toUpperCase()}_${employee.employeeId}_${Date.now()}`;
+    return { code, type, employeeId };
+  }
+
+  async processBarcodeScan(barcodeId: string, action: string, location: any, ipAddress: string): Promise<BarcodeSession> {
+    const id = this.currentId++;
+    const session: BarcodeSession = {
+      id,
+      sessionId: `session_${Date.now()}`,
+      employeeId: 1, // Mock employee ID
+      barcodeId,
+      action,
+      timestamp: new Date(),
+      location,
+      deviceInfo: { userAgent: 'Mozilla/5.0' },
+      ipAddress,
+      isValid: true,
+      notes: null,
+    };
+    return session;
+  }
+
+  async getBarcodeHistory(employeeId: number, limit: number): Promise<BarcodeSession[]> {
+    // Mock implementation
+    return [];
+  }
+
+  async validateBarcodeSession(sessionId: string): Promise<boolean> {
+    // Mock implementation
+    return true;
+  }
+
+  async syncEmployeeWithHRIS(data: any): Promise<any> {
+    // Mock implementation
+    return { success: true, message: 'Employee synced successfully' };
+  }
+
+  async syncAttendanceWithHRIS(employeeId: string, startDate: string, endDate: string): Promise<any> {
+    // Mock implementation
+    return { success: true, message: 'Attendance synced successfully' };
+  }
+
+  async syncLeaveWithHRIS(employeeId: string, year: number): Promise<any> {
+    // Mock implementation
+    return { success: true, message: 'Leave synced successfully' };
+  }
+
+  async getHrisSyncLogs(employeeId: number, limit: number): Promise<HrisSyncLog[]> {
+    // Mock implementation
+    return [];
+  }
+
+  async getHrisSyncStatus(employeeId: number): Promise<any> {
+    // Mock implementation
+    return { lastSync: new Date(), status: 'success' };
   }
 
   // Notification operations

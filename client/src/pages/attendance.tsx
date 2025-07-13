@@ -8,6 +8,7 @@ import { formatTime, formatDate, formatTimeOnly } from "@/lib/time-utils";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import Header from "@/components/header";
 
 export default function Attendance() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -95,30 +96,27 @@ export default function Attendance() {
 
   return (
     <div>
-      <div className="mb-6 bg-gradient-to-r from-red-50 to-white p-6 rounded-xl border border-red-100">
-        <h1 className="text-2xl font-bold text-red-800 flex items-center">
-          <div className="w-3 h-8 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-4"></div>
-          Absensi
-        </h1>
-        <p className="text-red-600 ml-7">Kelola kehadiran harian Anda</p>
-      </div>
+      <Header 
+        title="Absensi" 
+        subtitle="Kelola kehadiran harian Anda"
+      />
 
       {/* Check In/Out Section */}
-      <Card className="mb-6 border-red-100 shadow-lg bg-gradient-to-br from-white to-red-50">
+      <Card className="mb-6 border-secondary-red-medium shadow-lg bg-gradient-red-subtle">
         <CardContent className="p-6">
           <div className="text-center">
             <div className="mb-4">
-              <div className="text-3xl font-bold text-red-800 drop-shadow-sm">
+              <div className="text-3xl font-bold text-primary-red-dark drop-shadow-sm">
                 {formatTime(currentTime)}
               </div>
-              <div className="text-red-600">{formatDate(currentTime)}</div>
+              <div className="text-primary-red">{formatDate(currentTime)}</div>
             </div>
             
             <div className="flex justify-center space-x-4">
               <Button 
                 onClick={() => checkInMutation.mutate()}
                 disabled={checkInMutation.isPending || !!todayAttendance?.checkIn}
-                className="bg-success-green hover:bg-green-700"
+                className="bg-success-green hover:bg-success-green/80 shadow-md hover:shadow-lg"
               >
                 <LogIn className="w-4 h-4 mr-2" />
                 Check In
@@ -126,14 +124,14 @@ export default function Attendance() {
               <Button 
                 onClick={() => checkOutMutation.mutate()}
                 disabled={checkOutMutation.isPending || !todayAttendance?.checkIn || !!todayAttendance?.checkOut}
-                className="bg-primary-red hover:bg-red-700"
+                className="bg-gradient-red hover:bg-primary-red-dark shadow-md hover:shadow-lg"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Check Out
               </Button>
             </div>
 
-            <div className="mt-4 text-sm text-gray-500">
+            <div className="mt-4 text-sm text-text-light">
               Status: <span className="text-success-green font-medium">
                 {todayAttendance?.status === "present" ? "Hadir" : "Belum Absen"}
               </span>
@@ -144,55 +142,55 @@ export default function Attendance() {
 
       {/* Today's Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-red-600">Jam Masuk</h3>
-                <p className="text-2xl font-bold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Jam Masuk</h3>
+                <p className="text-2xl font-bold text-text-dark">
                   {todayAttendance?.checkIn 
                     ? formatTimeOnly(new Date(todayAttendance.checkIn))
                     : "-"
                   }
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-lg shadow-md">
+              <div className="p-3 bg-gradient-to-br from-success-green/20 to-success-green/30 rounded-lg shadow-md">
                 <Clock className="text-success-green w-6 h-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-red-600">Jam Keluar</h3>
-                <p className="text-2xl font-bold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Jam Keluar</h3>
+                <p className="text-2xl font-bold text-text-dark">
                   {todayAttendance?.checkOut 
                     ? formatTimeOnly(new Date(todayAttendance.checkOut))
                     : "-"
                   }
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+              <div className="p-3 bg-gradient-to-br from-primary-red/20 to-primary-red/30 rounded-lg shadow-md">
                 <LogOut className="text-primary-red w-6 h-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-red-600">Total Jam</h3>
-                <p className="text-2xl font-bold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Total Jam</h3>
+                <p className="text-2xl font-bold text-text-dark">
                   {todayAttendance?.totalHours || "-"}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <HourglassIcon className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-info-blue/20 to-info-blue/30 rounded-lg shadow-md">
+                <HourglassIcon className="text-info-blue w-6 h-6" />
               </div>
             </div>
           </CardContent>

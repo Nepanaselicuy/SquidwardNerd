@@ -24,11 +24,18 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Custom colors for SIIhadirin */
-  --primary-red: hsl(0, 73%, 41%);
-  --secondary-red: hsl(0, 83%, 95%);
-  --accent-orange: hsl(45, 93%, 47%);
-  --success-green: hsl(160, 64%, 40%);
+  /* Custom colors for SIIhadirin - PT Intek Solusi Indonesia Brand Colors */
+  --primary-red: hsl(0, 73%, 41%);           /* #B91C1C - Main brand red */
+  --primary-red-dark: hsl(0, 73%, 31%);      /* #991B1B - Darker red for text */
+  --primary-red-light: hsl(0, 73%, 51%);     /* #DC2626 - Lighter red for accents */
+  --secondary-red: hsl(0, 83%, 95%);         /* #FEF2F2 - Very light red background */
+  --secondary-red-medium: hsl(0, 83%, 90%);  /* #FEE2E2 - Medium light red */
+  --accent-orange: hsl(45, 93%, 47%);        /* #EAB308 - Warning/alert color */
+  --success-green: hsl(160, 64%, 40%);       /* #16A34A - Success color */
+  --info-blue: hsl(214, 95%, 32%);           /* #1D4ED8 - Info color */
+  --neutral-gray: hsl(220, 13%, 91%);        /* #E5E7EB - Neutral gray */
+  --text-dark: hsl(220, 13%, 18%);           /* #374151 - Dark text */
+  --text-light: hsl(220, 9%, 46%);           /* #6B7280 - Light text */
 }
 
 .dark {
@@ -52,6 +59,19 @@
   --destructive-foreground: hsl(0, 0%, 98%);
   --ring: hsl(240, 4.9%, 83.9%);
   --radius: 0.5rem;
+  
+  /* Dark mode custom colors */
+  --primary-red: hsl(0, 73%, 51%);
+  --primary-red-dark: hsl(0, 73%, 61%);
+  --primary-red-light: hsl(0, 73%, 41%);
+  --secondary-red: hsl(0, 83%, 5%);
+  --secondary-red-medium: hsl(0, 83%, 10%);
+  --accent-orange: hsl(45, 93%, 57%);
+  --success-green: hsl(160, 64%, 50%);
+  --info-blue: hsl(214, 95%, 42%);
+  --neutral-gray: hsl(220, 13%, 9%);
+  --text-dark: hsl(220, 13%, 82%);
+  --text-light: hsl(220, 9%, 54%);
 }
 
 @layer base {
@@ -65,6 +85,7 @@
 }
 
 @layer utilities {
+  /* Primary Red Variations */
   .text-primary-red {
     color: var(--primary-red);
   }
@@ -77,6 +98,23 @@
     border-color: var(--primary-red);
   }
   
+  .text-primary-red-dark {
+    color: var(--primary-red-dark);
+  }
+  
+  .bg-primary-red-dark {
+    background-color: var(--primary-red-dark);
+  }
+  
+  .text-primary-red-light {
+    color: var(--primary-red-light);
+  }
+  
+  .bg-primary-red-light {
+    background-color: var(--primary-red-light);
+  }
+  
+  /* Secondary Red Variations */
   .text-secondary-red {
     color: var(--secondary-red);
   }
@@ -85,6 +123,19 @@
     background-color: var(--secondary-red);
   }
   
+  .border-secondary-red {
+    border-color: var(--secondary-red);
+  }
+  
+  .bg-secondary-red-medium {
+    background-color: var(--secondary-red-medium);
+  }
+  
+  .border-secondary-red-medium {
+    border-color: var(--secondary-red-medium);
+  }
+  
+  /* Success Green */
   .text-success-green {
     color: var(--success-green);
   }
@@ -93,12 +144,52 @@
     background-color: var(--success-green);
   }
   
+  /* Accent Orange */
   .text-accent-orange {
     color: var(--accent-orange);
   }
   
   .bg-accent-orange {
     background-color: var(--accent-orange);
+  }
+  
+  /* Info Blue */
+  .text-info-blue {
+    color: var(--info-blue);
+  }
+  
+  .bg-info-blue {
+    background-color: var(--info-blue);
+  }
+  
+  /* Neutral Colors */
+  .text-neutral-gray {
+    color: var(--neutral-gray);
+  }
+  
+  .bg-neutral-gray {
+    background-color: var(--neutral-gray);
+  }
+  
+  .text-text-dark {
+    color: var(--text-dark);
+  }
+  
+  .text-text-light {
+    color: var(--text-light);
+  }
+  
+  /* Gradient Utilities */
+  .bg-gradient-red {
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+  }
+  
+  .bg-gradient-red-light {
+    background: linear-gradient(135deg, var(--secondary-red) 0%, var(--secondary-red-medium) 100%);
+  }
+  
+  .bg-gradient-red-subtle {
+    background: linear-gradient(135deg, var(--secondary-red) 0%, white 100%);
   }
 }
 
@@ -141,6 +232,21 @@
   
   .animate-fade-in-scale {
     animation: fadeInScale 0.3s ease-out;
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+  
+  .animate-fade-out {
+    animation: fadeOut 0.5s ease-in forwards;
   }
   
   /* Glass morphism effect */

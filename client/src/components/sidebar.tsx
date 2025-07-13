@@ -2,17 +2,43 @@ import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Home, Clock, Calendar, Bell, CalendarDays, User, LogOut, Building2 } from "lucide-react";
+import { Home, Clock, Calendar, Bell, CalendarDays, User, LogOut, Building2, BarChart3, Settings, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-const menuItems = [
-  { path: "/", label: "Dashboard", icon: Home },
-  { path: "/attendance", label: "Absensi", icon: Clock },
-  { path: "/leave", label: "Izin/Cuti", icon: Calendar },
-  { path: "/calendar", label: "Kalender", icon: CalendarDays },
-  { path: "/notifications", label: "Notifikasi", icon: Bell },
-  { path: "/profile", label: "Profile", icon: User },
-  { path: "/about", label: "Tentang", icon: Building2 },
-];
+const getMenuItems = (isAdmin: boolean, isManager: boolean, isHR: boolean) => {
+  const baseItems = [
+    { path: "/", label: "Dashboard", icon: Home },
+    { path: "/attendance", label: "Absensi", icon: Clock },
+    { path: "/leave", label: "Izin/Cuti", icon: Calendar },
+    { path: "/calendar", label: "Kalender", icon: CalendarDays },
+    { path: "/notifications", label: "Notifikasi", icon: Bell },
+    { path: "/profile", label: "Profile", icon: User },
+  ];
+
+  const adminItems = [
+    { path: "/admin", label: "Admin Panel", icon: Shield, adminOnly: true },
+    { path: "/analytics", label: "Analytics", icon: BarChart3, adminOnly: true },
+    { path: "/settings", label: "Settings", icon: Settings, adminOnly: true },
+  ];
+
+  const managerItems = [
+    { path: "/reports", label: "Reports", icon: BarChart3, managerOnly: true },
+  ];
+
+  const hrItems = [
+    { path: "/employees", label: "Employees", icon: User, hrOnly: true },
+  ];
+
+  return [
+    ...baseItems,
+    ...(isAdmin ? adminItems : []),
+    ...(isManager ? managerItems : []),
+    ...(isHR ? hrItems : []),
+    { path: "/about", label: "Tentang", icon: Building2 },
+  ];
+};
 
 interface SidebarProps {
   isOpen: boolean;
@@ -21,14 +47,14 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [location] = useLocation();
-
-  const { data: employee } = useQuery({
-    queryKey: ["/api/employee", 1],
-  });
+  const { user, logout } = useAuth();
+  const { isAdmin, isManager, isHR } = useRole();
 
   const { data: unreadCount } = useQuery({
     queryKey: ["/api/notifications", 1, "unread-count"],
   });
+
+  const menuItems = getMenuItems(isAdmin, isManager, isHR);
 
   const getInitials = (name: string) => {
     return name
@@ -62,13 +88,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}>
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="flex items-center justify-center px-6 py-8 bg-gradient-to-r from-primary-red to-red-700 relative overflow-hidden">
+          <div className="flex items-center justify-center px-6 py-8 bg-gradient-red relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
             <div className="flex items-center space-x-3 relative z-10">
               <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMjAgNEwzMiAxNEgyOEwyMCA4TDEyIDE0SDhMMjAgNFoiIGZpbGw9IndoaXRlIi8+CiAgPHBhdGggZD0iTTggMTZIMTJMMjAgMjJMMjggMTZIMzJMMjAgMzZMOCAxNloiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOCIvPgogIDxyZWN0IHg9IjQiIHk9IjE0IiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiByeD0iMiIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSIzMiIgeT0iMTQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPgogIDxyZWN0IHg9IjQiIHk9IjIyIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiByeD0iMiIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSIzMiIgeT0iMjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" 
+                src="https://intek.co.id/wp-content/uploads/Logo-Intek-RED-logogram-300x203.png" 
                 alt="PT Intek Solusi Indonesia Logo" 
-                className="w-10 h-10 drop-shadow-lg"
+                className="w-12 h-8 object-contain drop-shadow-lg"
               />
               <div className="text-white">
                 <div className="text-lg font-bold drop-shadow-md">SIIhadirin</div>
@@ -90,8 +116,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       "flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-200 group relative overflow-hidden",
                       "transform hover:scale-[1.02] hover:shadow-md",
                       isActive 
-                        ? "text-primary-red bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-primary-red shadow-sm" 
-                        : "text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-gray-900"
+                        ? "text-primary-red bg-gradient-red-light border-l-4 border-primary-red shadow-sm" 
+                        : "text-text-dark hover:bg-gradient-red-subtle hover:text-primary-red-dark"
                     )}
                     style={{ 
                       animationDelay: `${index * 50}ms`,
@@ -103,9 +129,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       isActive ? "text-primary-red scale-110" : "group-hover:scale-110"
                     )} />
                     <span className="relative z-10">{item.label}</span>
-                    {item.path === "/notifications" && unreadCount && unreadCount.count > 0 && (
+                    {item.path === "/notifications" && unreadCount && (unreadCount as any).count > 0 && (
                       <Badge className="ml-auto bg-primary-red text-white animate-pulse shadow-lg">
-                        {unreadCount.count}
+                        {(unreadCount as any).count}
                       </Badge>
                     )}
                     {!isActive && (
@@ -118,28 +144,36 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           {/* User Info & Logout */}
-          <div className="px-4 py-4 border-t border-gray-200 bg-gradient-to-b from-transparent to-gray-50/50">
-            <div className="flex items-center px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+          <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-transparent to-gray-50/50 dark:to-gray-800/50">
+            <div className="flex items-center px-4 py-3 bg-gradient-red-subtle dark:bg-secondary-red rounded-lg shadow-sm border border-secondary-red-medium dark:border-secondary-red-medium hover:shadow-md transition-all duration-200">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-red to-red-700 rounded-full flex items-center justify-center shadow-lg ring-2 ring-red-100">
+                <div className="w-8 h-8 bg-gradient-red rounded-full flex items-center justify-center shadow-lg ring-2 ring-secondary-red dark:ring-secondary-red">
                   <span className="text-white text-sm font-semibold">
-                    {employee ? getInitials(employee.name) : "AS"}
+                    {user ? getInitials(user.name) : "AS"}
                   </span>
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  {employee?.name || "Ahmad Sutrisno"}
+                <p className="text-sm font-medium text-text-dark dark:text-text-dark">
+                  {user?.name || "Ahmad Sutrisno"}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {employee?.position || "IT Developer"}
+                <p className="text-xs text-text-light dark:text-text-light">
+                  {user?.position || "IT Developer"}
                 </p>
               </div>
             </div>
-            <button className="w-full mt-3 flex items-center justify-center px-4 py-2 text-sm text-gray-600 hover:text-primary-red hover:bg-red-50 rounded-lg transition-all duration-200 group">
-              <LogOut className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
-              Logout
-            </button>
+            
+            {/* Theme Toggle & Logout */}
+            <div className="mt-3 flex items-center space-x-2">
+              <ThemeToggle />
+              <button 
+                onClick={logout}
+                className="flex-1 flex items-center justify-center px-4 py-2 text-sm text-text-light dark:text-text-light hover:text-primary-red hover:bg-secondary-red dark:hover:bg-secondary-red rounded-lg transition-all duration-200 group"
+              >
+                <LogOut className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>

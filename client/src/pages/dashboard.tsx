@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, LogOut, Calendar, Plane, CheckCircle, Info, AlertCircle } from "lucide-react";
 import Greeting from "@/components/greeting";
+import Header from "@/components/header";
 import { formatRelativeTime, formatTimeOnly } from "@/lib/time-utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading-spinner";
+import { ErrorDisplay } from "@/components/ui/error-display";
 
 export default function Dashboard() {
   const { data: employee, isLoading: employeeLoading } = useQuery({
@@ -30,10 +32,14 @@ export default function Dashboard() {
   if (employeeLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-32 w-full" />
+        <div className="flex items-center justify-center h-32">
+          <LoadingSpinner size="lg" variant="primary" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full" />
+            <div key={i} className="h-24 flex items-center justify-center">
+              <LoadingSkeleton lines={3} />
+            </div>
           ))}
         </div>
       </div>
@@ -42,19 +48,24 @@ export default function Dashboard() {
 
   return (
     <div>
-      <Greeting userName={employee?.name?.split(" ")[0] || "Ahmad"} />
+      <Header 
+        title="SIIhadirin" 
+        subtitle="Attendance Management System"
+      >
+        <Greeting userName={(employee as any)?.name?.split(" ")[0] || "Ahmad"} />
+      </Header>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-lg shadow-md">
+              <div className="p-3 bg-gradient-to-br from-success-green/20 to-success-green/30 rounded-lg shadow-md">
                 <Clock className="text-success-green w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Check In</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Check In</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {todayAttendance?.checkIn 
                     ? formatTimeOnly(new Date(todayAttendance.checkIn))
                     : "-"
@@ -65,15 +76,15 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
+              <div className="p-3 bg-gradient-to-br from-primary-red/20 to-primary-red/30 rounded-lg shadow-md">
                 <LogOut className="text-primary-red w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Check Out</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Check Out</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {todayAttendance?.checkOut 
                     ? formatTimeOnly(new Date(todayAttendance.checkOut))
                     : "-"
@@ -84,15 +95,15 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <Calendar className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-info-blue/20 to-info-blue/30 rounded-lg shadow-md">
+                <Calendar className="text-info-blue w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Hadir Bulan Ini</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Hadir Bulan Ini</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {monthlyStats ? `${monthlyStats.present}/${monthlyStats.total}` : "-"}
                 </p>
               </div>
@@ -100,15 +111,15 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-red-100 hover:border-red-200">
+        <Card className="hover-lift border-secondary-red-medium hover:border-primary-red">
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-gradient-to-br from-red-100 to-red-200 rounded-lg shadow-md">
-                <Plane className="text-primary-red w-6 h-6" />
+              <div className="p-3 bg-gradient-to-br from-accent-orange/20 to-accent-orange/30 rounded-lg shadow-md">
+                <Plane className="text-accent-orange w-6 h-6" />
               </div>
               <div className="ml-4">
-                <h3 className="text-sm font-medium text-red-600">Sisa Cuti</h3>
-                <p className="text-lg font-semibold text-gray-900">
+                <h3 className="text-sm font-medium text-primary-red-dark">Sisa Cuti</h3>
+                <p className="text-lg font-semibold text-text-dark">
                   {employee?.annualLeaveBalance || 0}
                 </p>
               </div>
@@ -120,10 +131,10 @@ export default function Dashboard() {
       {/* Recent Activity & Upcoming Events */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <Card className="border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-200">
+        <Card className="border-secondary-red-medium hover:border-primary-red hover:shadow-lg transition-all duration-200">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center">
-              <div className="w-2 h-6 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-3"></div>
+            <h3 className="text-lg font-semibold text-primary-red-dark mb-4 flex items-center">
+              <div className="w-2 h-6 bg-gradient-red rounded-full mr-3"></div>
               Aktivitas Terbaru
             </h3>
             <div className="space-y-4">
@@ -131,8 +142,8 @@ export default function Dashboard() {
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-success-green rounded-full"></div>
                   <div className="ml-3">
-                    <p className="text-sm text-gray-900">Check In berhasil</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-text-dark">Check In berhasil</p>
+                    <p className="text-xs text-text-light">
                       Hari ini, {formatTimeOnly(new Date(todayAttendance.checkIn))}
                     </p>
                   </div>
@@ -143,8 +154,8 @@ export default function Dashboard() {
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-primary-red rounded-full"></div>
                   <div className="ml-3">
-                    <p className="text-sm text-gray-900">Check Out berhasil</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-text-dark">Check Out berhasil</p>
+                    <p className="text-xs text-text-light">
                       Hari ini, {formatTimeOnly(new Date(todayAttendance.checkOut))}
                     </p>
                   </div>
@@ -162,10 +173,10 @@ export default function Dashboard() {
         </Card>
 
         {/* Upcoming Events */}
-        <Card className="border-red-100 hover:border-red-200 hover:shadow-lg transition-all duration-200">
+        <Card className="border-secondary-red-medium hover:border-primary-red hover:shadow-lg transition-all duration-200">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center">
-              <div className="w-2 h-6 bg-gradient-to-b from-primary-red to-red-600 rounded-full mr-3"></div>
+            <h3 className="text-lg font-semibold text-primary-red-dark mb-4 flex items-center">
+              <div className="w-2 h-6 bg-gradient-red rounded-full mr-3"></div>
               Event Mendatang
             </h3>
             <div className="space-y-4">
@@ -177,8 +188,8 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-900">{event.title}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-text-dark">{event.title}</p>
+                    <p className="text-xs text-text-light">
                       {new Date(event.date).toLocaleDateString('id-ID', {
                         day: 'numeric',
                         month: 'short',
